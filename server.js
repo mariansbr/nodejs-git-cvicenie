@@ -1,10 +1,12 @@
 const http = require('http');
+const url = require('url');
 const hostname = '127.0.0.1';
 const port = 3000;
 const server = http.createServer((req, res) => {
+const parsedUrl = url.parse(req.url, true);
 res.statusCode = 200;
 res.setHeader('Content-Type', 'text/html; charset=utf-8');
-if (req.url === '/') {
+if (parsedUrl.pathname === '/') {
 res.end(`
 <!DOCTYPE html>
 <html>
@@ -42,12 +44,13 @@ border-radius: 4px;
 <ul>
 <li class="endpoint"><a href="/">/</a> - Hlavná stránka</li>
 <li class="endpoint"><a href="/test">/test</a> - Testovací endpoint</li>
+<li class="endpoint"><a href="/funkcia?a=5&b=3">/funkcia</a> - Kalkulačka (a + b)</li>
 </ul>
 </div>
 </body>
 </html>
 `);
-} else if (req.url === '/test') {
+} else if (parsedUrl.pathname === '/test') {
 res.end(`
 <!DOCTYPE html>
 <html>
@@ -85,6 +88,91 @@ margin: 20px 0;
 <p><strong>URL:</strong> ${req.url}</p>
 <p><strong>Čas:</strong> ${new Date().toLocaleString('sk-SK')}</p>
 </div>
+<p><a href="/">← Späť na hlavnú stránku</a></p>
+</div>
+</body>
+</html>
+`);
+} else if (parsedUrl.pathname === '/funkcia') {
+const a = parseFloat(parsedUrl.query.a) || 0;
+const b = parseFloat(parsedUrl.query.b) || 0;
+const vysledok = a + b;
+res.end(`
+<!DOCTYPE html>
+<html>
+<head>
+<title>Funkcia - Kalkulačka</title>
+<style>
+body {
+font-family: Arial, sans-serif;
+max-width: 800px;
+margin: 50px auto;
+padding: 20px;
+background: #f0f8e8;
+}
+.container {
+background: white;
+padding: 30px;
+border-radius: 8px;
+box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+h1 { color: #4a7c3e; }
+.result {
+background: #d4ffcc;
+padding: 20px;
+border-left: 4px solid #4a7c3e;
+margin: 20px 0;
+font-size: 1.2em;
+}
+.formula {
+font-family: monospace;
+font-size: 1.5em;
+text-align: center;
+margin: 20px 0;
+}
+input {
+padding: 10px;
+font-size: 1em;
+border: 2px solid #4a7c3e;
+border-radius: 4px;
+width: 100px;
+}
+button {
+padding: 10px 20px;
+font-size: 1em;
+background: #4a7c3e;
+color: white;
+border: none;
+border-radius: 4px;
+cursor: pointer;
+}
+button:hover {
+background: #3d6633;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>🧮 Kalkulačka</h1>
+<div class="formula">
+${a} + ${b} = <strong>${vysledok}</strong>
+</div>
+<div class="result">
+<p><strong>Výsledok:</strong> ${vysledok}</p>
+<p><strong>Parameter a:</strong> ${a}</p>
+<p><strong>Parameter b:</strong> ${b}</p>
+</div>
+<form action="/funkcia" method="get">
+<p>
+<label>Číslo A: <input type="number" name="a" value="${a}" step="0.01"></label>
+</p>
+<p>
+<label>Číslo B: <input type="number" name="b" value="${b}" step="0.01"></label>
+</p>
+<p>
+<button type="submit">Vypočítať</button>
+</p>
+</form>
 <p><a href="/">← Späť na hlavnú stránku</a></p>
 </div>
 </body>
