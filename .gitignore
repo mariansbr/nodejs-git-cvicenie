@@ -1,0 +1,17 @@
+
+[A
+e.js
+node_modules/
+npm-debug.log*
+.env
+# OS súbory
+.DS_Store
+Thumbs.db
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+# Logs
+logs/
+*.log
