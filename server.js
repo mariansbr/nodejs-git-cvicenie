@@ -34,6 +34,15 @@ padding: 10px;
 margin: 10px 0;
 border-radius: 4px;
 }
+.badge {
+display: inline-block;
+padding: 3px 8px;
+border-radius: 3px;
+font-size: 0.85em;
+font-weight: bold;
+margin-left: 10px;
+}
+.badge-new { background: #4CAF50; color: white; }
 </style>
 </head>
 <body>
@@ -44,7 +53,8 @@ border-radius: 4px;
 <ul>
 <li class="endpoint"><a href="/">/</a> - Hlavná stránka</li>
 <li class="endpoint"><a href="/test">/test</a> - Testovací endpoint</li>
-<li class="endpoint"><a href="/funkcia?a=5&b=3">/funkcia</a> - Kalkulačka (a + b)</li>
+<li class="endpoint"><a href="/funkcia?a=5&b=3">/funkcia</a> - Kalkulačka</li>
+<li class="endpoint"><a href="/dalsiafunkcia">/dalsiafunkcia</a> - Dátum a čas <span class="badge badge-new
 </ul>
 </div>
 </body>
@@ -178,6 +188,111 @@ ${a} + ${b} = <strong>${vysledok}</strong>
 </body>
 </html>
 `);
+} else if (parsedUrl.pathname === '/dalsiafunkcia') {
+const teraz = new Date();
+const den = teraz.toLocaleDateString('sk-SK', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+const cas = teraz.toLocaleTimeString('sk-SK');
+const timestamp = teraz.getTime();
+const rok = teraz.getFullYear();
+const denVRoku = Math.floor((teraz - new Date(rok, 0, 0)) / 1000 / 60 / 60 / 24);
+res.end(`
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dátum a Čas</title>
+<meta http-equiv="refresh" content="1">
+<style>
+body {
+font-family: Arial, sans-serif;
+max-width: 800px;
+margin: 50px auto;
+padding: 20px;
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+.container {
+background: white;
+padding: 30px;
+border-radius: 8px;
+box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+h1 { color: #667eea; text-align: center; }
+.time-display {
+font-size: 3em;
+text-align: center;
+color: #667eea;
+font-weight: bold;
+margin: 30px 0;
+font-family: monospace;
+}
+.date-display {
+font-size: 1.5em;
+text-align: center;
+color: #764ba2;
+margin: 20px 0;
+}
+.info-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 15px;
+margin: 30px 0;
+}
+.info-box {
+background: #f5f5f5;
+padding: 15px;
+border-radius: 8px;
+border-left: 4px solid #667eea;
+}
+.info-label {
+font-size: 0.9em;
+color: #666;
+margin-bottom: 5px;
+}
+.info-value {
+font-size: 1.3em;
+color: #333;
+font-weight: bold;
+}
+.refresh-note {
+text-align: center;
+color: #666;
+font-size: 0.9em;
+margin-top: 20px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>🕐 Dátum a Čas</h1>
+<div class="time-display">${cas}</div>
+<div class="date-display">${den}</div>
+<div class="info-grid">
+<div class="info-box">
+<div class="info-label">Unix Timestamp</div>
+<div class="info-value">${timestamp}</div>
+</div>
+<div class="info-box">
+<div class="info-label">Rok</div>
+<div class="info-value">${rok}</div>
+</div>
+<div class="info-box">
+<div class="info-label">Deň v roku</div>
+<div class="info-value">${denVRoku}</div>
+</div>
+<div class="info-box">
+<div class="info-label">Mesiac</div>
+<div class="info-value">${teraz.getMonth() + 1}</div>
+</div>
+</div>
+<div class="refresh-note">
+⟳ Stránka sa automaticky obnovuje každú sekundu
+</div>
+<p style="text-align: center; margin-top: 30px;">
+<a href="/" style="color: #667eea; text-decoration: none; font-weight: bold;">← Späť na hlavnú stránku</a>
+</p>
+</div>
+</body>
+</html>
+`);
 } else {
 res.statusCode = 404;
 res.end(`
@@ -197,4 +312,9 @@ res.end(`
 });
 server.listen(port, hostname, () => {
 console.log(`🚀 Server beží na http://${hostname}:${port}/`);
+console.log('\nDostupné endpointy:');
+console.log(` http://${hostname}:${port}/`);
+console.log(` http://${hostname}:${port}/test`);
+console.log(` http://${hostname}:${port}/funkcia?a=5&b=3`);
+console.log(` http://${hostname}:${port}/dalsiafunkcia`);
 });
